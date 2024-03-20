@@ -24,6 +24,10 @@ Clone the Project:
 - git clone git@github.com:Shagasresthaa/AstronomicalObjectsClassifier.git
 - cd AstronomicalObjectsClassifier
 
+(As per new Github security policies, you will need to either setup an SSH key and setup in your account or setup an access key [SSH setup is rather simple and wouldnt have any need to regenerate periodically like access key] in order to do any code movement.
+
+Heres a quick link to the tutorial to do so: https://www.youtube.com/watch?v=X40b9x9BFGo
+
 Set Up a Virtual Environment (Optional but recommended):
 
 (localEnv is the name i used, feel free to use any name but please make sure to add it in .gitignore as you dont want them in repo)
