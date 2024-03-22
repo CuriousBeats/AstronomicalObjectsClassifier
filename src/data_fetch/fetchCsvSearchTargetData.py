@@ -46,7 +46,7 @@ def fetchCsvMultiBatchData():
         multiPartFileWriter(batchedDataResponse, batchFileNamePath)
         lastObjectID = getLastObjId(batchFileNamePath)
         size = remDataSizeFetch(lastObjectID)
-        print("\nSize: " + str(size) + "\nLast Object ID: " + str(last_objid))
+        print("\nSize: " + str(size) + "\nLast Object ID: " + str(lastObjectID))
 
         
 fetchCsvMultiBatchData()
