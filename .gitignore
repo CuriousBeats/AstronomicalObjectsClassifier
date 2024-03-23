@@ -28,11 +28,6 @@ dist/
 *.swo
 *.swn
 
-# Dataset files that can be re-generated or downloaded
-*.csv
-*.h5
-*.hdf5
-
 # Virtual environment
 .env
 .venv

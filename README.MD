@@ -33,13 +33,21 @@ Set Up a Virtual Environment (Optional but recommended):
 (localEnv is the name i used, feel free to use any name but please make sure to add it in .gitignore as you dont want them in repo)
 
 - python -m venv localEnv
-- source localEnv/bin/activate  # On Windows use `localEnv\Scripts\activate`
+- source localEnv/bin/activate # On Windows use `localEnv\Scripts\activate`
 
 ## Install Required Libraries:
 
 Navigate to the root of the project and install the required packages using pip with following command:
 
 pip install -r requirements.txt
+
+# Dataset Fetch Scripts Guide
+
+## CSV Data fetch
+
+Navigate to the root of the project and run the following command which will fetch the latest data from SDSS API
+
+python3 -m src.data_fetch.fetchCsvSearchTargetData
 
 ## Additional Tools
 
