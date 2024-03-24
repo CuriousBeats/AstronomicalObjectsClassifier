@@ -14,7 +14,8 @@ batch_size = 32  # Adjust as needed
 data_dir = "data"
 processed_dir = data_dir + "/processed"
 raw_dir = data_dir + "/raw/image_extracts/astroImages"
-class_names = ['galaxy', 'qso', 'star'] 
+class_names = ['galaxy', 'qso', 'star']
+
 for split in ['train', 'test', 'val']:
     for class_name in class_names:
         os.makedirs(os.path.join(processed_dir, split, class_name), exist_ok=True)
@@ -31,11 +32,11 @@ for class_name in class_names:
 
     # Move files to respective directories 
     for file_name in train_files:
-        shutil.move(os.path.join(source_dir, file_name), os.path.join(processed_dir, 'train', class_name, file_name))
+        shutil.copy(os.path.join(source_dir, file_name), os.path.join(processed_dir, 'train', class_name, file_name))
     for file_name in test_files:
-        shutil.move(os.path.join(source_dir, file_name), os.path.join(processed_dir, 'test', class_name, file_name))
+        shutil.copy(os.path.join(source_dir, file_name), os.path.join(processed_dir, 'test', class_name, file_name))
     for file_name in val_files:
-        shutil.move(os.path.join(source_dir, file_name), os.path.join(processed_dir, 'val', class_name, file_name))
+        shutil.copy(os.path.join(source_dir, file_name), os.path.join(processed_dir, 'val', class_name, file_name))
 
 
 data_transform = transforms.Compose([
@@ -101,6 +102,7 @@ log_file.write(f'Optimizer: Adam\n')
 log_file.write(f'Learning rate: 0.001\n')
 log_file.write(f'Loss function: CrossEntropyLoss\n')
 log_file.write(f'Epoch: Step: Loss:\n')
+
 #use tqdm to show progress bar
 for epoch in tqdm(range(epochs)):
     for i, (images, labels) in enumerate(tqdm(train_loader)):
