@@ -11,32 +11,49 @@ import shutil
 from tqdm import tqdm
 import time
 batch_size = 32  # Adjust as needed
+resplit_data = True
+
 data_dir = "data"
 processed_dir = data_dir + "/processed"
 raw_dir = data_dir + "/raw/image_extracts/astroImages"
 class_names = ['galaxy', 'qso', 'star']
+#check if processed directory exists, with images in each class
+def data_processed(processed_dir, class_names):
+    if os.path.exists(os.path.join(processed_dir, 'train', class_names[0])):
+        if len(os.listdir(os.path.join(processed_dir, 'train', class_names[0]))):
+            print("Data already processed")
+            return 1
+    return 0
 
-for split in ['train', 'test', 'val']:
+if data_processed(processed_dir, class_names) and resplit_data:
+    #remove all files in processed directory
+    for split in ['train', 'test', 'val']:
+        for class_name in class_names:
+            shutil.rmtree(os.path.join(processed_dir, split, class_name))
+
+if not data_processed(processed_dir, class_names) or resplit_data:
+
+    for split in ['train', 'test', 'val']:
+        for class_name in class_names:
+            os.makedirs(os.path.join(processed_dir, split, class_name), exist_ok=True)
+
     for class_name in class_names:
-        os.makedirs(os.path.join(processed_dir, split, class_name), exist_ok=True)
+        source_dir = os.path.join(raw_dir, class_name)
+        file_names = os.listdir(source_dir)
 
-for class_name in class_names:
-    source_dir = os.path.join(raw_dir, class_name)
-    file_names = os.listdir(source_dir)
+        # Split file names into train, test, and val sets
+        train_files, test_files = train_test_split(
+            file_names, test_size=0.2, random_state=42, stratify= [class_name] * len(file_names)
+        )
+        train_files, val_files = train_test_split(train_files, test_size=0.125, random_state=42, stratify= [class_name] * len(train_files))
 
-    # Split file names into train, test, and val sets
-    train_files, test_files = train_test_split(
-        file_names, test_size=0.2, random_state=42, stratify= [class_name] * len(file_names)
-    )
-    train_files, val_files = train_test_split(train_files, test_size=0.125, random_state=42, stratify= [class_name] * len(train_files))
-
-    # Move files to respective directories 
-    for file_name in train_files:
-        shutil.copy(os.path.join(source_dir, file_name), os.path.join(processed_dir, 'train', class_name, file_name))
-    for file_name in test_files:
-        shutil.copy(os.path.join(source_dir, file_name), os.path.join(processed_dir, 'test', class_name, file_name))
-    for file_name in val_files:
-        shutil.copy(os.path.join(source_dir, file_name), os.path.join(processed_dir, 'val', class_name, file_name))
+        # Move files to respective directories 
+        for file_name in train_files:
+            shutil.copy(os.path.join(source_dir, file_name), os.path.join(processed_dir, 'train', class_name, file_name))
+        for file_name in test_files:
+            shutil.copy(os.path.join(source_dir, file_name), os.path.join(processed_dir, 'test', class_name, file_name))
+        for file_name in val_files:
+            shutil.copy(os.path.join(source_dir, file_name), os.path.join(processed_dir, 'val', class_name, file_name))
 
 
 data_transform = transforms.Compose([
