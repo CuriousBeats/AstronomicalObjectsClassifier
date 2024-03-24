@@ -17,21 +17,21 @@ data_dir = "data"
 processed_dir = data_dir + "/processed"
 raw_dir = data_dir + "/raw/image_extracts/astroImages"
 class_names = ['galaxy', 'qso', 'star']
+
 #check if processed directory exists, with images in each class
-def data_processed(processed_dir, class_names):
+def data_split(processed_dir, class_names):
     if os.path.exists(os.path.join(processed_dir, 'train', class_names[0])):
         if len(os.listdir(os.path.join(processed_dir, 'train', class_names[0]))):
             print("Data already processed")
             return 1
     return 0
-
-if data_processed(processed_dir, class_names) and resplit_data:
-    #remove all files in processed directory
+def clear_split(processed_dir, class_names):
     for split in ['train', 'test', 'val']:
         for class_name in class_names:
             shutil.rmtree(os.path.join(processed_dir, split, class_name))
-
-if not data_processed(processed_dir, class_names) or resplit_data:
+    return 1
+#split data into train, test, and validation sets
+def split_data(processed_dir, class_names):
 
     for split in ['train', 'test', 'val']:
         for class_name in class_names:
@@ -46,14 +46,22 @@ if not data_processed(processed_dir, class_names) or resplit_data:
             file_names, test_size=0.2, random_state=42, stratify= [class_name] * len(file_names)
         )
         train_files, val_files = train_test_split(train_files, test_size=0.125, random_state=42, stratify= [class_name] * len(train_files))
-
-        # Move files to respective directories 
         for file_name in train_files:
-            shutil.copy(os.path.join(source_dir, file_name), os.path.join(processed_dir, 'train', class_name, file_name))
+            shutil.copy(os.path.join(source_dir, file_name), os.path.join(processed_dir, 'train', class_name))
         for file_name in test_files:
-            shutil.copy(os.path.join(source_dir, file_name), os.path.join(processed_dir, 'test', class_name, file_name))
+            shutil.copy(os.path.join(source_dir, file_name), os.path.join(processed_dir, 'test', class_name))
         for file_name in val_files:
-            shutil.copy(os.path.join(source_dir, file_name), os.path.join(processed_dir, 'val', class_name, file_name))
+            shutil.copy(os.path.join(source_dir, file_name), os.path.join(processed_dir, 'val', class_name))
+    return 1
+
+start = time.time()
+
+if data_split(processed_dir, class_names) and resplit_data:
+    clear_split(processed_dir, class_names)
+if not data_split(processed_dir, class_names) or resplit_data:
+    split_data(processed_dir, class_names)
+
+    print(f"Data split in {time.time() - start:.2f} seconds")
 
 
 data_transform = transforms.Compose([
@@ -120,6 +128,8 @@ log_file.write(f'Learning rate: 0.001\n')
 log_file.write(f'Loss function: CrossEntropyLoss\n')
 log_file.write(f'Epoch: Step: Loss:\n')
 
+#start timer
+start = time.time()
 #use tqdm to show progress bar
 for epoch in tqdm(range(epochs)):
     for i, (images, labels) in enumerate(tqdm(train_loader)):
@@ -135,6 +145,17 @@ for epoch in tqdm(range(epochs)):
             print(f'Epoch {epoch + 1}/{epochs}, Step {i + 1}, Loss: {loss.item():.4f}')
             log_file.write(f'{epoch + 1}/{epochs}, {i + 1}, {loss.item():.4f}\n')
 
+# format time in hours, minutes, seconds
+end_time = time.time() - start
+hours, rem = divmod(end_time, 3600)
+minutes, seconds = divmod(rem, 60)
+
+time_str = "Training completed in {:.0f} hours, {:.0f} minutes, {:.0f} seconds".format(hours, minutes, seconds)
+print(time_str)
+log_file.write(time_str)
+
+
+#test model
 correct = 0
 total = 0
 with torch.no_grad():
@@ -147,3 +168,9 @@ with torch.no_grad():
 
 accuracy = correct / total
 print(f'Accuracy on test set: {accuracy * 100:.2f}%')
+log_file.write(f'Accuracy on test set: {accuracy * 100:.2f}%\n')
+log_file.close()
+
+#save model, naming it using date and time
+torch.save(model.state_dict(), f'models/model_{time.strftime("%Y%m%d-%H%M%S")}.pt')
+
