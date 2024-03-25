@@ -11,7 +11,7 @@ import shutil
 from tqdm import tqdm
 import time
 batch_size = 32  # Adjust as needed
-resplit_data = False
+resplit_data = True
 
 data_dir = "data"
 processed_dir = data_dir + "/processed/filteredImages/invFilter"
