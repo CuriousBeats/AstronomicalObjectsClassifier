@@ -12,7 +12,9 @@ def fetchImageData(csvFilePath):
         specobjid = row['specobjid']
         imageClass = row['class']
         print(f"Row {index+1}: RA = {ra}, DEC = {dec}, OBJID = {objid}, SPEC_OBJID = {specobjid}, IMAGE_CLASS = {imageClass}")
-        getImage(objid, specobjid, imageClass, ra, dec, 0.4, 128, 128, "")
+        getImage(objid, specobjid, imageClass, ra, dec, 0.4, 128, 128, "I")
+        if index == 75999:
+            break
 
 def writeImageFile(resp, imgFilePath):
     print("Writing " + str(imgFilePath) + " ....")
@@ -30,6 +32,7 @@ def getImage(objId, specObjId, imgClass, ra, dec, scale, height, width, opt):
     starSpecImagePath = "data/raw/image_extracts/specImages/star/"
     qsoSpecImagePath = "data/raw/image_extracts/specImages/qso/"
 
+    specSearchUrl = SDSS_SPECTRA_BASE + str(specObjId)
 
     if(opt is None):
         searchUrl = "ra=" + str(ra) + "&dec=" + str(dec) + "&scale=" + str(scale) + "&height=" + str(height) + "&width=" + str(width)
@@ -37,16 +40,22 @@ def getImage(objId, specObjId, imgClass, ra, dec, scale, height, width, opt):
         searchUrl = "ra=" + str(ra) + "&dec=" + str(dec) + "&scale=" + str(scale) + "&height=" + str(height) + "&width=" + str(width) + "&opt=" + str(opt)
 
     imageResult = reqObj.get(SDSS_IMAGE_CUTOUT_BASE + searchUrl)
+    #specImageResult = reqObj.get(SDSS_SPECTRA_BASE + str(specObjId))
     
     if(imgClass == "GALAXY"):
         imagePath = galaxyImagePath + str(objId) + ".png"
+        specImagePath = galaxySpecImagePath + str(objId) + "_spec.png" 
+        
     elif(imgClass == "STAR"):
         imagePath = starImagePath + str(objId) + ".png"
+        specImagePath = starSpecImagePath + str(objId) + "_spec.png" 
     elif(imgClass == "QSO"):
         imagePath = qsoImagePath + str(objId) + ".png"
+        specImagePath = qsoSpecImagePath + str(objId) + "_spec.png" 
     else:
         print("Unknown or empty class: " + str(imgClass) + " ID: " + str(objId))
 
     writeImageFile(imageResult, imagePath)
+    #writeImageFile(specImageResult, specImagePath)
 
 fetchImageData("data/raw/csv_extract/astro_data_batch_1.csv")
