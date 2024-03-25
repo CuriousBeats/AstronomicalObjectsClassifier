@@ -5,6 +5,7 @@ from configs.sdssApiEndpoints import SDSS_IMAGE_CUTOUT_BASE, SDSS_SPECTRA_BASE
 def fetchImageData(csvFilePath):
     print("Reading Data File: " + str(csvFilePath))
     df = pd.read_csv(csvFilePath, comment='#')
+    df_spliced = df.iloc[71014:76000]
     for index, row in df.iterrows():
         ra = row['ra']
         dec = row['dec']
