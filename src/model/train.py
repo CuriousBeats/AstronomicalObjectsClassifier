@@ -11,7 +11,7 @@ import shutil
 from tqdm import tqdm
 import time
 batch_size = 32  # Adjust as needed
-resplit_data = True
+resplit_data = False
 
 data_dir = "data"
 processed_dir = data_dir + "/processed/filteredImages/invFilter"
@@ -144,7 +144,7 @@ for epoch in tqdm(range(epochs)):
         optimizer.step()
 
         if i % 100 == 0:  # Log progress every 100 mini-batches
-            print(f'Epoch {epoch + 1}/{epochs}, Step {i + 1}, Loss: {loss.item():.4f}')
+            # print(f'Epoch {epoch + 1}/{epochs}, Step {i + 1}, Loss: {loss.item():.4f}')
             log_file.write(f'{epoch + 1}/{epochs}, {i + 1}, {loss.item():.4f}\n')
 
 # format time in hours, minutes, seconds
@@ -171,6 +171,7 @@ missed_stars = 0
 missed_galaxies = 0
 missed_qso = 0
 
+torch.save(model.state_dict(), f'models/model_{time.strftime("%Y%m%d-%H%M%S")}.pt')
 
 
 #test model
@@ -184,28 +185,15 @@ with torch.no_grad():
         total += labels.size(0)
         correct += (predicted == labels).sum().item()
 
-        if labels == 0:
-            if predicted == 0:
-                true_stars += 1
-            elif predicted == 1:
-                false_galaxies += 1
-            elif predicted == 2:
-                missed_stars += 1
-        elif labels == 1:
-            if predicted == 0:
-                false_stars += 1
-            elif predicted == 1:
-                true_galaxies += 1
-            elif predicted == 2:
-                missed_galaxies += 1
-        elif labels == 2:
-            if predicted == 0:
-                missed_qso += 1
-            elif predicted == 1:
-                false_qso += 1
-            elif predicted == 2:
-                true_qso += 1
-        
+        true_stars += ((predicted == 0) & (labels == 0)).sum().item()
+        true_galaxies += ((predicted == 1) & (labels == 1)).sum().item()
+        true_qso += ((predicted == 2) & (labels == 2)).sum().item()
+        false_stars += ((predicted == 0) & (labels != 0)).sum().item()
+        false_galaxies += ((predicted == 1) & (labels != 1)).sum().item()
+        false_qso += ((predicted == 2) & (labels != 2)).sum().item()
+        missed_stars += ((predicted != 0) & (labels == 0)).sum().item()
+        missed_galaxies += ((predicted != 1) & (labels == 1)).sum().item()
+        missed_qso += ((predicted != 2) & (labels == 2)).sum().item()
 
 accuracy = correct / total
 print(f'Accuracy on test set: {accuracy * 100:.2f}%')
