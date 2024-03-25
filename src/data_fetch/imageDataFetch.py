@@ -28,6 +28,10 @@ def getImage(objId, specObjId, imgClass, ra, dec, scale, height, width, opt):
     starImagePath = "data/raw/image_extracts/astroImages/star/"
     qsoImagePath = "data/raw/image_extracts/astroImages/qso/"
 
+    invGalaxyImagePath = "data/raw/image_extracts/filteredImages/invFilter/galaxy/"
+    invStarImagePath = "data/raw/image_extracts/filteredImages/invFilter/star/"
+    invQsoImagePath = "data/raw/image_extracts/filteredImages/invFilter/qso/"
+
     galaxySpecImagePath = "data/raw/image_extracts/specImages/galaxy/"
     starSpecImagePath = "data/raw/image_extracts/specImages/star/"
     qsoSpecImagePath = "data/raw/image_extracts/specImages/qso/"
@@ -44,18 +48,27 @@ def getImage(objId, specObjId, imgClass, ra, dec, scale, height, width, opt):
     
     if(imgClass == "GALAXY"):
         imagePath = galaxyImagePath + str(objId) + ".png"
-        specImagePath = galaxySpecImagePath + str(objId) + "_spec.png" 
+        specImagePath = galaxySpecImagePath + str(objId) + "_spec.png"
+        invImagePath = invGalaxyImagePath + str(objId) + "_inv.png"
         
     elif(imgClass == "STAR"):
         imagePath = starImagePath + str(objId) + ".png"
-        specImagePath = starSpecImagePath + str(objId) + "_spec.png" 
+        specImagePath = starSpecImagePath + str(objId) + "_spec.png"
+        invImagePath = invStarImagePath + str(objId) + "_inv.png"
+         
     elif(imgClass == "QSO"):
         imagePath = qsoImagePath + str(objId) + ".png"
-        specImagePath = qsoSpecImagePath + str(objId) + "_spec.png" 
+        specImagePath = qsoSpecImagePath + str(objId) + "_spec.png"
+        invImagePath = invQsoImagePath + str(objId) + "_inv.png"
+
     else:
         print("Unknown or empty class: " + str(imgClass) + " ID: " + str(objId))
 
-    writeImageFile(imageResult, imagePath)
-    #writeImageFile(specImageResult, specImagePath)
+    if(opt is None):
+        writeImageFile(imageResult, imagePath)
+        #writeImageFile(specImageResult, specImagePath)
+    else:
+        writeImageFile(imageResult, invImagePath)
+        #writeImageFile(specImageResult, specImagePath)
 
 fetchImageData("data/raw/csv_extract/astro_data_batch_1.csv")
