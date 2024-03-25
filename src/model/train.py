@@ -25,11 +25,13 @@ def data_split(processed_dir, class_names):
             print("Data already processed")
             return 1
     return 0
+
 def clear_split(processed_dir, class_names):
     for split in ['train', 'test', 'val']:
         for class_name in class_names:
             shutil.rmtree(os.path.join(processed_dir, split, class_name))
     return 1
+
 #split data into train, test, and validation sets
 def split_data(processed_dir, class_names):
 
