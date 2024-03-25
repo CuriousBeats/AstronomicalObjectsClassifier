@@ -154,6 +154,22 @@ time_str = "Training completed in {:.0f} hours, {:.0f} minutes, {:.0f} seconds".
 print(time_str)
 log_file.write(time_str)
 
+#for true positives
+true_stars = 0
+true_galaxies = 0
+true_qso = 0
+
+#for false positives
+false_stars = 0
+false_galaxies = 0
+false_qso = 0
+
+#for missed classifications
+missed_stars = 0
+missed_galaxies = 0
+missed_qso = 0
+
+
 
 #test model
 correct = 0
@@ -166,9 +182,56 @@ with torch.no_grad():
         total += labels.size(0)
         correct += (predicted == labels).sum().item()
 
+        if labels == 0:
+            if predicted == 0:
+                true_stars += 1
+            elif predicted == 1:
+                false_galaxies += 1
+            elif predicted == 2:
+                missed_stars += 1
+        elif labels == 1:
+            if predicted == 0:
+                false_stars += 1
+            elif predicted == 1:
+                true_galaxies += 1
+            elif predicted == 2:
+                missed_galaxies += 1
+        elif labels == 2:
+            if predicted == 0:
+                missed_qso += 1
+            elif predicted == 1:
+                false_qso += 1
+            elif predicted == 2:
+                true_qso += 1
+        
+
 accuracy = correct / total
 print(f'Accuracy on test set: {accuracy * 100:.2f}%')
 log_file.write(f'Accuracy on test set: {accuracy * 100:.2f}%\n')
+# class accuracy percentages
+total_stars = true_stars + missed_stars
+total_galaxies = true_galaxies + missed_galaxies
+total_qso = true_qso + missed_qso
+true_stars = true_stars / total_stars
+false_stars = false_stars / total_stars
+missed_stars = missed_stars / total_stars
+true_galaxies = true_galaxies / total_galaxies
+false_galaxies = false_galaxies / total_galaxies
+missed_galaxies = missed_galaxies / total_galaxies
+true_qso = true_qso / total_qso
+false_qso = false_qso / total_qso
+missed_qso = missed_qso / total_qso
+
+log_file.write(f'True stars: {true_stars * 100:.2f}%\n')
+log_file.write(f'False stars: {false_stars * 100:.2f}%\n')
+log_file.write(f'Missed stars: {missed_stars * 100:.2f}%\n\n')
+log_file.write(f'True galaxies: {true_galaxies * 100:.2f}%\n')
+log_file.write(f'False galaxies: {false_galaxies * 100:.2f}%\n')
+log_file.write(f'Missed galaxies: {missed_galaxies * 100:.2f}%\n\n')
+log_file.write(f'True qso: {true_qso * 100:.2f}%\n')
+log_file.write(f'False qso: {false_qso * 100:.2f}%\n')
+log_file.write(f'Missed qso: {missed_qso * 100:.2f}%\n')
+
 log_file.close()
 
 #save model, naming it using date and time
