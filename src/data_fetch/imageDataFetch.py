@@ -32,19 +32,10 @@ def getImage(objId, specObjId, imgClass, ra, dec, scale, height, width, opt):
     invStarImagePath = "data/raw/image_extracts/filteredImages/invFilter/star/"
     invQsoImagePath = "data/raw/image_extracts/filteredImages/invFilter/qso/"
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-=======
->>>>>>> upstream/main
     customGalaxyImagePath = "data/raw/image_extracts/filteredImages/OBFQFilter/galaxy/"
     customStarImagePath = "data/raw/image_extracts/filteredImages/OBFQFilter/star/"
     customQsoImagePath = "data/raw/image_extracts/filteredImages/OBFQFilter/qso/"
 
-<<<<<<< HEAD
->>>>>>> upstream/main
-=======
->>>>>>> upstream/main
     galaxySpecImagePath = "data/raw/image_extracts/specImages/galaxy/"
     starSpecImagePath = "data/raw/image_extracts/specImages/star/"
     qsoSpecImagePath = "data/raw/image_extracts/specImages/qso/"
@@ -63,40 +54,19 @@ def getImage(objId, specObjId, imgClass, ra, dec, scale, height, width, opt):
         imagePath = galaxyImagePath + str(objId) + ".png"
         specImagePath = galaxySpecImagePath + str(objId) + "_spec.png"
         invImagePath = invGalaxyImagePath + str(objId) + "_inv.png"
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
         customImagePath = customGalaxyImagePath + str(objId) + "_obfq.png"
->>>>>>> upstream/main
-=======
-        customImagePath = customGalaxyImagePath + str(objId) + "_obfq.png"
->>>>>>> upstream/main
         
     elif(imgClass == "STAR"):
         imagePath = starImagePath + str(objId) + ".png"
         specImagePath = starSpecImagePath + str(objId) + "_spec.png"
         invImagePath = invStarImagePath + str(objId) + "_inv.png"
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
         customImagePath = customStarImagePath + str(objId) + "_obfq.png"
->>>>>>> upstream/main
-=======
-        customImagePath = customStarImagePath + str(objId) + "_obfq.png"
->>>>>>> upstream/main
          
     elif(imgClass == "QSO"):
         imagePath = qsoImagePath + str(objId) + ".png"
         specImagePath = qsoSpecImagePath + str(objId) + "_spec.png"
         invImagePath = invQsoImagePath + str(objId) + "_inv.png"
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
         customImagePath = customQsoImagePath + str(objId) + "_obfq.png"
->>>>>>> upstream/main
-=======
-        customImagePath = customQsoImagePath + str(objId) + "_obfq.png"
->>>>>>> upstream/main
 
     else:
         print("Unknown or empty class: " + str(imgClass) + " ID: " + str(objId))
@@ -105,15 +75,7 @@ def getImage(objId, specObjId, imgClass, ra, dec, scale, height, width, opt):
         writeImageFile(imageResult, imagePath)
         #writeImageFile(specImageResult, specImagePath)
     else:
-<<<<<<< HEAD
-<<<<<<< HEAD
-        writeImageFile(imageResult, invImagePath)
-=======
         writeImageFile(imageResult, customImagePath)
->>>>>>> upstream/main
-=======
-        writeImageFile(imageResult, customImagePath)
->>>>>>> upstream/main
         #writeImageFile(specImageResult, specImagePath)
 
 fetchImageData("data/raw/csv_extract/astro_data_batch_1.csv")
