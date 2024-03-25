@@ -33,11 +33,17 @@ def getImage(objId, specObjId, imgClass, ra, dec, scale, height, width, opt):
     invQsoImagePath = "data/raw/image_extracts/filteredImages/invFilter/qso/"
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> upstream/main
     customGalaxyImagePath = "data/raw/image_extracts/filteredImages/OBFQFilter/galaxy/"
     customStarImagePath = "data/raw/image_extracts/filteredImages/OBFQFilter/star/"
     customQsoImagePath = "data/raw/image_extracts/filteredImages/OBFQFilter/qso/"
 
+<<<<<<< HEAD
+>>>>>>> upstream/main
+=======
 >>>>>>> upstream/main
     galaxySpecImagePath = "data/raw/image_extracts/specImages/galaxy/"
     starSpecImagePath = "data/raw/image_extracts/specImages/star/"
@@ -58,6 +64,10 @@ def getImage(objId, specObjId, imgClass, ra, dec, scale, height, width, opt):
         specImagePath = galaxySpecImagePath + str(objId) + "_spec.png"
         invImagePath = invGalaxyImagePath + str(objId) + "_inv.png"
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+        customImagePath = customGalaxyImagePath + str(objId) + "_obfq.png"
+>>>>>>> upstream/main
 =======
         customImagePath = customGalaxyImagePath + str(objId) + "_obfq.png"
 >>>>>>> upstream/main
@@ -67,6 +77,10 @@ def getImage(objId, specObjId, imgClass, ra, dec, scale, height, width, opt):
         specImagePath = starSpecImagePath + str(objId) + "_spec.png"
         invImagePath = invStarImagePath + str(objId) + "_inv.png"
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+        customImagePath = customStarImagePath + str(objId) + "_obfq.png"
+>>>>>>> upstream/main
 =======
         customImagePath = customStarImagePath + str(objId) + "_obfq.png"
 >>>>>>> upstream/main
@@ -76,6 +90,10 @@ def getImage(objId, specObjId, imgClass, ra, dec, scale, height, width, opt):
         specImagePath = qsoSpecImagePath + str(objId) + "_spec.png"
         invImagePath = invQsoImagePath + str(objId) + "_inv.png"
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+        customImagePath = customQsoImagePath + str(objId) + "_obfq.png"
+>>>>>>> upstream/main
 =======
         customImagePath = customQsoImagePath + str(objId) + "_obfq.png"
 >>>>>>> upstream/main
@@ -88,7 +106,11 @@ def getImage(objId, specObjId, imgClass, ra, dec, scale, height, width, opt):
         #writeImageFile(specImageResult, specImagePath)
     else:
 <<<<<<< HEAD
+<<<<<<< HEAD
         writeImageFile(imageResult, invImagePath)
+=======
+        writeImageFile(imageResult, customImagePath)
+>>>>>>> upstream/main
 =======
         writeImageFile(imageResult, customImagePath)
 >>>>>>> upstream/main
