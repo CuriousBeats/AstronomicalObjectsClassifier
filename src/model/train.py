@@ -10,13 +10,13 @@ from sklearn.model_selection import train_test_split
 import shutil
 from tqdm import tqdm
 import time
-batch_size = 32  # Adjust as needed
-resplit_data = True
+batch_size = 64  # Adjust as needed
+resplit_data = False
 
 data_dir = "data"
-processed_dir = data_dir + "/processed/filteredImages/OBFQFilter"
-raw_dir = data_dir + "/raw/image_extracts/filteredImages/OBFQFilter"
-model_name = "OBFQ"
+processed_dir = data_dir + "/processed/astroImages"
+raw_dir = data_dir + "/raw/image_extracts/astroImages"
+model_name = "default_64BatchSize"
 class_names = ['galaxy', 'qso', 'star']
 
 #check if processed directory exists, with images in each class
@@ -28,6 +28,7 @@ def data_split(processed_dir, class_names):
     return 0
 
 def clear_split(processed_dir, class_names):
+    print("Resplitting data...")
     for split in ['train', 'test', 'val']:
         for class_name in class_names:
             shutil.rmtree(os.path.join(processed_dir, split, class_name))
@@ -40,7 +41,7 @@ def split_data(processed_dir, class_names):
         for class_name in class_names:
             os.makedirs(os.path.join(processed_dir, split, class_name), exist_ok=True)
 
-    for class_name in class_names:
+    for class_name in tqdm(class_names):
         source_dir = os.path.join(raw_dir, class_name)
         file_names = os.listdir(source_dir)
 
@@ -122,8 +123,7 @@ model = MyCNN().to(device)
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.parameters(), lr=0.001)
 epochs = 10  # Adjust number of epochs
-# Create a torch log file to record training progress, using date and name
-log_file = open(f'logs/log_{time.strftime("%Y%m%d")}/{model_name}.txt', 'w')
+log_file = open(f'logs/log_{time.strftime("%Y%m%d")}_{model_name}.txt', 'w')
 log_file.write(f'Epochs: {epochs}\n')
 log_file.write(f'Batch size: {batch_size}\n')
 log_file.write(f'Optimizer: Adam\n')
@@ -145,7 +145,6 @@ for epoch in tqdm(range(epochs)):
         optimizer.step()
 
         if i % 100 == 0:  # Log progress every 100 mini-batches
-            # print(f'Epoch {epoch + 1}/{epochs}, Step {i + 1}, Loss: {loss.item():.4f}')
             log_file.write(f'{epoch + 1}/{epochs}, {i + 1}, {loss.item():.4f}\n')
 
 # format time in hours, minutes, seconds
@@ -225,4 +224,4 @@ log_file.write(f'Missed qso: {missed_qso * 100:.2f}%\n')
 log_file.close()
 
 #save model, naming it using date and name
-torch.save(model.state_dict(), f'models/model_{time.strftime("%Y%m%d")}/{model_name}.pt')
+torch.save(model.state_dict(), f'models/model_{time.strftime("%Y%m%d")}_{model_name}.pt')
