@@ -16,6 +16,7 @@ resplit_data = True
 data_dir = "data"
 processed_dir = data_dir + "/processed/filteredImages/OBFQFilter"
 raw_dir = data_dir + "/raw/image_extracts/filteredImages/OBFQFilter"
+model_name = "OBFQ"
 class_names = ['galaxy', 'qso', 'star']
 
 #check if processed directory exists, with images in each class
@@ -121,8 +122,8 @@ model = MyCNN().to(device)
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.parameters(), lr=0.001)
 epochs = 10  # Adjust number of epochs
-# Create a torch log file to record training progress, using date and time
-log_file = open(f'log_{time.strftime("%Y%m%d-%H%M%S")}.txt', 'w')
+# Create a torch log file to record training progress, using date and name
+log_file = open(f'logs/log_{time.strftime("%Y%m%d")}/{model_name}.txt', 'w')
 log_file.write(f'Epochs: {epochs}\n')
 log_file.write(f'Batch size: {batch_size}\n')
 log_file.write(f'Optimizer: Adam\n')
@@ -223,6 +224,5 @@ log_file.write(f'Missed qso: {missed_qso * 100:.2f}%\n')
 
 log_file.close()
 
-#save model, naming it using date and time
-torch.save(model.state_dict(), f'models/model_{time.strftime("%Y%m%d-%H%M%S")}.pt')
-
+#save model, naming it using date and name
+torch.save(model.state_dict(), f'models/model_{time.strftime("%Y%m%d")}/{model_name}.pt')
