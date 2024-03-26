@@ -85,9 +85,9 @@ class ImageDataset(datasets.ImageFolder):
 
         return image, target
 
-train_dataset = ImageDataset(root=processed_dir + 'train', transform=data_transform)
-test_dataset = ImageDataset(root= processed_dir + 'test', transform=data_transform) 
-val_dataset = ImageDataset(root= processed_dir + 'val', transform=data_transform)
+train_dataset = ImageDataset(root=processed_dir + '/train', transform=data_transform)
+test_dataset = ImageDataset(root= processed_dir + '/test', transform=data_transform) 
+val_dataset = ImageDataset(root= processed_dir + '/val', transform=data_transform)
 
 train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
 test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
