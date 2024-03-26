@@ -10,13 +10,13 @@ from sklearn.model_selection import train_test_split
 import shutil
 from tqdm import tqdm
 import time
-batch_size = 64  # Adjust as needed
-resplit_data = False
+batch_size = 16  # Adjust as needed
+resplit_data = True
 
 data_dir = "data"
 processed_dir = data_dir + "/processed/astroImages"
 raw_dir = data_dir + "/raw/image_extracts/astroImages"
-model_name = "default_64BatchSize"
+model_name = "default_16fBatchSize"
 class_names = ['galaxy', 'qso', 'star']
 
 #check if processed directory exists, with images in each class
