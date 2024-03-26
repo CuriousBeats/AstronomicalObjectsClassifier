@@ -180,6 +180,9 @@ false_galaxy_qso = 0
 false_qso_star = 0
 false_qso_galaxy = 0
 
+total_stars = 0
+total_galaxies = 0
+total_qso = 0
 
 #test model
 correct = 0
@@ -190,9 +193,9 @@ with torch.no_grad():
         outputs = model(images)
         _, predicted = torch.max(outputs.data, 1)
         total += labels.size(0)
-        total_stars = labels[labels == 0].size(0)
-        total_galaxies = labels[labels == 1].size(0)
-        total_qso = labels[labels == 2].size(0)
+        total_stars += labels[labels == 0].size(0)
+        total_galaxies += labels[labels == 1].size(0)
+        total_qso += labels[labels == 2].size(0)
         correct += (predicted == labels).sum().item()
 
         true_stars += ((predicted == 0) & (labels == 0)).sum().item()
@@ -213,7 +216,6 @@ with torch.no_grad():
         false_galaxy_qso += ((predicted == 1) & (labels == 2)).sum().item()
         false_qso_star += ((predicted == 2) & (labels == 0)).sum().item()
         false_qso_galaxy += ((predicted == 2) & (labels == 1)).sum().item()
-
 
 
 
@@ -252,6 +254,7 @@ log_file.write(f'Missed galaxies: {missed_galaxies * 100:.2f}%\n\n')
 log_file.write(f'True qso: {true_qso * 100:.2f}%\n')
 log_file.write(f'False qso: {false_qso * 100:.2f}%\n')
 log_file.write(f'Missed qso: {missed_qso * 100:.2f}%\n')
+
 log_file.write(f'Galaxies classified as stars: {false_star_galaxy * 100:.2f}%\n')
 log_file.write(f'QSO classified as stars: {false_star_qso * 100:.2f}%\n')
 log_file.write(f'Stars classified as galaxies: {false_galaxy_star * 100:.2f}%\n')
