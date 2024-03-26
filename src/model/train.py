@@ -173,6 +173,12 @@ missed_stars = 0
 missed_galaxies = 0
 missed_qso = 0
 
+false_star_galaxy = 0
+false_star_qso = 0
+false_galaxy_star = 0
+false_galaxy_qso = 0
+false_qso_star = 0
+false_qso_galaxy = 0
 
 
 #test model
@@ -192,12 +198,24 @@ with torch.no_grad():
         true_stars += ((predicted == 0) & (labels == 0)).sum().item()
         true_galaxies += ((predicted == 1) & (labels == 1)).sum().item()
         true_qso += ((predicted == 2) & (labels == 2)).sum().item()
+
         false_stars += ((predicted == 0) & (labels != 0)).sum().item()
         false_galaxies += ((predicted == 1) & (labels != 1)).sum().item()
         false_qso += ((predicted == 2) & (labels != 2)).sum().item()
+
         missed_stars += ((predicted != 0) & (labels == 0)).sum().item()
         missed_galaxies += ((predicted != 1) & (labels == 1)).sum().item()
         missed_qso += ((predicted != 2) & (labels == 2)).sum().item()
+
+        false_star_galaxy += ((predicted == 0) & (labels == 1)).sum().item()
+        false_star_qso += ((predicted == 0) & (labels == 2)).sum().item()
+        false_galaxy_star += ((predicted == 1) & (labels == 0)).sum().item()
+        false_galaxy_qso += ((predicted == 1) & (labels == 2)).sum().item()
+        false_qso_star += ((predicted == 2) & (labels == 0)).sum().item()
+        false_qso_galaxy += ((predicted == 2) & (labels == 1)).sum().item()
+
+
+
 
 accuracy = correct / total
 print(f'Accuracy on test set: {accuracy * 100:.2f}%')
@@ -216,6 +234,15 @@ true_qso = true_qso / total_qso
 false_qso = false_qso / total_qso
 missed_qso = missed_qso / total_qso
 
+false_star_galaxy = false_star_galaxy / total_galaxies
+false_star_qso = false_star_qso / total_qso
+false_galaxy_star = false_galaxy_star / total_stars
+false_galaxy_qso = false_galaxy_qso / total_qso
+false_qso_star = false_qso_star / total_stars
+false_qso_galaxy = false_qso_galaxy / total_galaxies
+
+
+
 log_file.write(f'True stars: {true_stars * 100:.2f}%\n')
 log_file.write(f'False stars: {false_stars * 100:.2f}%\n')
 log_file.write(f'Missed stars: {missed_stars * 100:.2f}%\n\n')
@@ -225,6 +252,13 @@ log_file.write(f'Missed galaxies: {missed_galaxies * 100:.2f}%\n\n')
 log_file.write(f'True qso: {true_qso * 100:.2f}%\n')
 log_file.write(f'False qso: {false_qso * 100:.2f}%\n')
 log_file.write(f'Missed qso: {missed_qso * 100:.2f}%\n')
+log_file.write(f'Galaxies classified as stars: {false_star_galaxy * 100:.2f}%\n')
+log_file.write(f'QSO classified as stars: {false_star_qso * 100:.2f}%\n')
+log_file.write(f'Stars classified as galaxies: {false_galaxy_star * 100:.2f}%\n')
+log_file.write(f'QSO classified as galaxies: {false_galaxy_qso * 100:.2f}%\n')
+log_file.write(f'Stars classified as QSO: {false_qso_star * 100:.2f}%\n')
+log_file.write(f'Galaxies classified as QSO: {false_qso_galaxy * 100:.2f}%\n')
+
 
 log_file.close()
 
