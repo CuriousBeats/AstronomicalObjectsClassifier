@@ -171,7 +171,6 @@ missed_stars = 0
 missed_galaxies = 0
 missed_qso = 0
 
-torch.save(model.state_dict(), f'models/model_{time.strftime("%Y%m%d-%H%M%S")}.pt')
 
 
 #test model
