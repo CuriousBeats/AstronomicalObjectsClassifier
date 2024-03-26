@@ -12,6 +12,8 @@ from tqdm import tqdm
 import time
 batch_size = 32  # Adjust as needed
 resplit_data = True
+epochs = 15  # Adjust number of epochs
+lr = 0.001  # Adjust learning rate
 
 data_dir = "data"
 processed_dir = data_dir + "/processed/filteredImages/invFilter"
@@ -119,14 +121,13 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")  # Use GPU
 
 model = MyCNN().to(device)
 criterion = nn.CrossEntropyLoss()
-optimizer = optim.Adam(model.parameters(), lr=0.001)
-epochs = 10  # Adjust number of epochs
+optimizer = optim.Adam(model.parameters(), lr=lr)
 # Create a torch log file to record training progress, using date and time
 log_file = open(f'log_{time.strftime("%Y%m%d-%H%M%S")}.txt', 'w')
 log_file.write(f'Epochs: {epochs}\n')
 log_file.write(f'Batch size: {batch_size}\n')
 log_file.write(f'Optimizer: Adam\n')
-log_file.write(f'Learning rate: 0.001\n')
+log_file.write(f'Learning rate: {lr}\n')
 log_file.write(f'Loss function: CrossEntropyLoss\n')
 log_file.write(f'Epoch: Step: Loss:\n')
 
@@ -182,6 +183,9 @@ with torch.no_grad():
         outputs = model(images)
         _, predicted = torch.max(outputs.data, 1)
         total += labels.size(0)
+        total_stars = labels[labels == 0].size(0)
+        total_galaxies = labels[labels == 1].size(0)
+        total_qso = labels[labels == 2].size(0)
         correct += (predicted == labels).sum().item()
 
         true_stars += ((predicted == 0) & (labels == 0)).sum().item()
@@ -198,9 +202,9 @@ accuracy = correct / total
 print(f'Accuracy on test set: {accuracy * 100:.2f}%')
 log_file.write(f'Accuracy on test set: {accuracy * 100:.2f}%\n')
 # class accuracy percentages
-total_stars = true_stars + missed_stars
-total_galaxies = true_galaxies + missed_galaxies
-total_qso = true_qso + missed_qso
+# total_stars = true_stars + missed_stars
+# total_galaxies = true_galaxies + missed_galaxies
+# total_qso = true_qso + missed_qso
 true_stars = true_stars / total_stars
 false_stars = false_stars / total_stars
 missed_stars = missed_stars / total_stars
