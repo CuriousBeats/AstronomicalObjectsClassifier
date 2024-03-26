@@ -14,8 +14,8 @@ batch_size = 32  # Adjust as needed
 resplit_data = True
 
 data_dir = "data"
-processed_dir = data_dir + "/processed/filteredImages/invFilter"
-raw_dir = data_dir + "/raw/image_extracts/filteredImages/invFilter"
+processed_dir = data_dir + "/processed/filteredImages/OBFQFilter"
+raw_dir = data_dir + "/raw/image_extracts/filteredImages/OBFQFilter"
 class_names = ['galaxy', 'qso', 'star']
 
 #check if processed directory exists, with images in each class
