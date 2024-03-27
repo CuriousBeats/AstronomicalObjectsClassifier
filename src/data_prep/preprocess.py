@@ -59,26 +59,27 @@ def split_data(processed_dir, raw_dir, class_names):
     return 1
 
 
-class ImageDataset(datasets.ImageFolder):
-    def __init__(self, root, transform=None):
-        super().__init__(root, transform=transform)
 
-    def __getitem__(self, index):
-        path, target = self.samples[index]
-        image = Image.open(path).convert('RGB')  # Ensure RGB format
-
-        if self.transform is not None:
-            image = self.transform(image)
-
-        return image, target
 
 def get_loaders(processed_dir, batch_size):
+    class ImageDataset(datasets.ImageFolder):
+        def __init__(self, root, transform=None):
+            super().__init__(root, transform=transform)
 
+        def __getitem__(self, index):
+            path, target = self.samples[index]
+            image = Image.open(path).convert('RGB')  # Ensure RGB format
+
+            if self.transform is not None:
+                image = self.transform(image)
+
+            return image, target
     data_transform = transforms.Compose([
         transforms.Resize((128, 128)),
         transforms.ToTensor(),  # Converts PIL Image to PyTorch Tensor
         transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])  # ImageNet normalization
     ])
+    
     train_dataset = ImageDataset(root=processed_dir + '/train', transform=data_transform)
     test_dataset = ImageDataset(root= processed_dir + '/test', transform=data_transform) 
     val_dataset = ImageDataset(root= processed_dir + '/val', transform=data_transform)

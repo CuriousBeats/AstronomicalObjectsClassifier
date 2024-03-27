@@ -1,3 +1,4 @@
+import os
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -5,12 +6,12 @@ from torchvision import datasets, transforms
 from torch.utils.data import DataLoader
 import numpy as np
 from PIL import Image
-import os
 from sklearn.model_selection import train_test_split
 from tqdm import tqdm
 import time
 from src.data_prep.preprocess import convert_to_numpy, data_split, clear_split, split_data, get_loaders
 from src.evaluation.eval import write_test_eval
+import tensorboard
 
 batch_size = 32  # Adjust as needed
 resplit_data = True
