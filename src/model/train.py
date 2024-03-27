@@ -10,13 +10,15 @@ from sklearn.model_selection import train_test_split
 import shutil
 from tqdm import tqdm
 import time
-batch_size = 16  # Adjust as needed
+batch_size = 32  # Adjust as needed
 resplit_data = True
+epochs = 15  # Adjust number of epochs
+lr = 0.001  # Adjust learning rate
 
 data_dir = "data"
 processed_dir = data_dir + "/processed/astroImages"
 raw_dir = data_dir + "/raw/image_extracts/astroImages"
-model_name = "default_16fBatchSize"
+model_name = "default_32fBatchSize"
 class_names = ['galaxy', 'qso', 'star']
 
 #check if processed directory exists, with images in each class
@@ -121,13 +123,13 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")  # Use GPU
 
 model = MyCNN().to(device)
 criterion = nn.CrossEntropyLoss()
-optimizer = optim.Adam(model.parameters(), lr=0.001)
+optimizer = optim.Adam(model.parameters(), lr=lr)
 epochs = 10  # Adjust number of epochs
 log_file = open(f'logs/log_{time.strftime("%Y%m%d")}_{model_name}.txt', 'w')
 log_file.write(f'Epochs: {epochs}\n')
 log_file.write(f'Batch size: {batch_size}\n')
 log_file.write(f'Optimizer: Adam\n')
-log_file.write(f'Learning rate: 0.001\n')
+log_file.write(f'Learning rate: {lr}\n')
 log_file.write(f'Loss function: CrossEntropyLoss\n')
 log_file.write(f'Epoch: Step: Loss:\n')
 
@@ -171,7 +173,16 @@ missed_stars = 0
 missed_galaxies = 0
 missed_qso = 0
 
+false_star_galaxy = 0
+false_star_qso = 0
+false_galaxy_star = 0
+false_galaxy_qso = 0
+false_qso_star = 0
+false_qso_galaxy = 0
 
+total_stars = 0
+total_galaxies = 0
+total_qso = 0
 
 #test model
 correct = 0
@@ -180,27 +191,47 @@ with torch.no_grad():
     for images, labels in test_loader:
         images, labels = images.to(device), labels.to(device)
         outputs = model(images)
+        probabilities = nn.functional.softmax(outputs, dim=1)
         _, predicted = torch.max(outputs.data, 1)
+        
+        avg_galaxy_confidence = torch.mean(probabilities[:, 0]).item()
+        avg_qso_confidence = torch.mean(probabilities[:, 1]).item()
+        avg_star_confidence = torch.mean(probabilities[:, 2]).item()
+
         total += labels.size(0)
+        total_stars += labels[labels == 0].size(0)
+        total_galaxies += labels[labels == 1].size(0)
+        total_qso += labels[labels == 2].size(0)
         correct += (predicted == labels).sum().item()
 
         true_stars += ((predicted == 0) & (labels == 0)).sum().item()
         true_galaxies += ((predicted == 1) & (labels == 1)).sum().item()
         true_qso += ((predicted == 2) & (labels == 2)).sum().item()
+
         false_stars += ((predicted == 0) & (labels != 0)).sum().item()
         false_galaxies += ((predicted == 1) & (labels != 1)).sum().item()
         false_qso += ((predicted == 2) & (labels != 2)).sum().item()
+
         missed_stars += ((predicted != 0) & (labels == 0)).sum().item()
         missed_galaxies += ((predicted != 1) & (labels == 1)).sum().item()
         missed_qso += ((predicted != 2) & (labels == 2)).sum().item()
+
+        false_star_galaxy += ((predicted == 0) & (labels == 1)).sum().item()
+        false_star_qso += ((predicted == 0) & (labels == 2)).sum().item()
+        false_galaxy_star += ((predicted == 1) & (labels == 0)).sum().item()
+        false_galaxy_qso += ((predicted == 1) & (labels == 2)).sum().item()
+        false_qso_star += ((predicted == 2) & (labels == 0)).sum().item()
+        false_qso_galaxy += ((predicted == 2) & (labels == 1)).sum().item()
+
+
 
 accuracy = correct / total
 print(f'Accuracy on test set: {accuracy * 100:.2f}%')
 log_file.write(f'Accuracy on test set: {accuracy * 100:.2f}%\n')
 # class accuracy percentages
-total_stars = true_stars + missed_stars
-total_galaxies = true_galaxies + missed_galaxies
-total_qso = true_qso + missed_qso
+# total_stars = true_stars + missed_stars
+# total_galaxies = true_galaxies + missed_galaxies
+# total_qso = true_qso + missed_qso
 true_stars = true_stars / total_stars
 false_stars = false_stars / total_stars
 missed_stars = missed_stars / total_stars
@@ -211,6 +242,15 @@ true_qso = true_qso / total_qso
 false_qso = false_qso / total_qso
 missed_qso = missed_qso / total_qso
 
+false_star_galaxy = false_star_galaxy / total_galaxies
+false_star_qso = false_star_qso / total_qso
+false_galaxy_star = false_galaxy_star / total_stars
+false_galaxy_qso = false_galaxy_qso / total_qso
+false_qso_star = false_qso_star / total_stars
+false_qso_galaxy = false_qso_galaxy / total_galaxies
+
+
+
 log_file.write(f'True stars: {true_stars * 100:.2f}%\n')
 log_file.write(f'False stars: {false_stars * 100:.2f}%\n')
 log_file.write(f'Missed stars: {missed_stars * 100:.2f}%\n\n')
@@ -220,6 +260,17 @@ log_file.write(f'Missed galaxies: {missed_galaxies * 100:.2f}%\n\n')
 log_file.write(f'True qso: {true_qso * 100:.2f}%\n')
 log_file.write(f'False qso: {false_qso * 100:.2f}%\n')
 log_file.write(f'Missed qso: {missed_qso * 100:.2f}%\n')
+
+log_file.write(f'Galaxies classified as stars: {false_star_galaxy * 100:.2f}%\n')
+log_file.write(f'QSO classified as stars: {false_star_qso * 100:.2f}%\n')
+log_file.write(f'Stars classified as galaxies: {false_galaxy_star * 100:.2f}%\n')
+log_file.write(f'QSO classified as galaxies: {false_galaxy_qso * 100:.2f}%\n')
+log_file.write(f'Stars classified as QSO: {false_qso_star * 100:.2f}%\n')
+log_file.write(f'Galaxies classified as QSO: {false_qso_galaxy * 100:.2f}%\n')
+
+log_file.write(f'Average star confidence: {avg_star_confidence:.2f}\n')
+log_file.write(f'Average galaxy confidence: {avg_galaxy_confidence:.2f}\n')
+log_file.write(f'Average qso confidence: {avg_qso_confidence:.2f}\n')
 
 log_file.close()
 
