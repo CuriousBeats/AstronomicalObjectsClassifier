@@ -51,3 +51,9 @@ localEnv/
 .pytest_cache/
 .mypy_cache/
 
+#downloaded files
+data/cifar-10-batches-py/
+data/cifar-10-python.tar.gz
+
+# processed files
+data/processed/
