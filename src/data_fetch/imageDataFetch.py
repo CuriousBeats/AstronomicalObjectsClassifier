@@ -5,7 +5,6 @@ from configs.sdssApiEndpoints import SDSS_IMAGE_CUTOUT_BASE, SDSS_SPECTRA_BASE
 def fetchImageData(csvFilePath):
     print("Reading Data File: " + str(csvFilePath))
     df = pd.read_csv(csvFilePath, comment='#')
-    df_spliced = df.iloc[71014:76000]
     for index, row in df.iterrows():
         ra = row['ra']
         dec = row['dec']
@@ -13,7 +12,7 @@ def fetchImageData(csvFilePath):
         specobjid = row['specobjid']
         imageClass = row['class']
         print(f"Row {index+1}: RA = {ra}, DEC = {dec}, OBJID = {objid}, SPEC_OBJID = {specobjid}, IMAGE_CLASS = {imageClass}")
-        getImage(objid, specobjid, imageClass, ra, dec, 0.4, 128, 128, "OBFQ")
+        getImage(objid, specobjid, imageClass, ra, dec, 0.21, 128, 128, "")
         if index == 75999:
             break
 
@@ -33,9 +32,9 @@ def getImage(objId, specObjId, imgClass, ra, dec, scale, height, width, opt):
     invStarImagePath = "data/raw/image_extracts/filteredImages/invFilter/star/"
     invQsoImagePath = "data/raw/image_extracts/filteredImages/invFilter/qso/"
 
-    customGalaxyImagePath = "data/raw/image_extracts/filteredImages/OBFQFilter/galaxy/"
-    customStarImagePath = "data/raw/image_extracts/filteredImages/OBFQFilter/star/"
-    customQsoImagePath = "data/raw/image_extracts/filteredImages/OBFQFilter/qso/"
+    customGalaxyImagePath = "data/raw/image_extracts/filteredImages/zoomFilter/galaxy/"
+    customStarImagePath = "data/raw/image_extracts/filteredImages/zoomFilter/star/"
+    customQsoImagePath = "data/raw/image_extracts/filteredImages/zoomFilter/qso/"
 
     galaxySpecImagePath = "data/raw/image_extracts/specImages/galaxy/"
     starSpecImagePath = "data/raw/image_extracts/specImages/star/"
@@ -55,25 +54,25 @@ def getImage(objId, specObjId, imgClass, ra, dec, scale, height, width, opt):
         imagePath = galaxyImagePath + str(objId) + ".png"
         specImagePath = galaxySpecImagePath + str(objId) + "_spec.png"
         invImagePath = invGalaxyImagePath + str(objId) + "_inv.png"
-        customImagePath = customGalaxyImagePath + str(objId) + "_obfq.png"
+        customImagePath = customGalaxyImagePath + str(objId) + "_zoom.png"
         
     elif(imgClass == "STAR"):
         imagePath = starImagePath + str(objId) + ".png"
         specImagePath = starSpecImagePath + str(objId) + "_spec.png"
         invImagePath = invStarImagePath + str(objId) + "_inv.png"
-        customImagePath = customStarImagePath + str(objId) + "_obfq.png"
+        customImagePath = customStarImagePath + str(objId) + "_zoom.png"
          
     elif(imgClass == "QSO"):
         imagePath = qsoImagePath + str(objId) + ".png"
         specImagePath = qsoSpecImagePath + str(objId) + "_spec.png"
         invImagePath = invQsoImagePath + str(objId) + "_inv.png"
-        customImagePath = customQsoImagePath + str(objId) + "_obfq.png"
+        customImagePath = customQsoImagePath + str(objId) + "_zoom.png"
 
     else:
         print("Unknown or empty class: " + str(imgClass) + " ID: " + str(objId))
 
     if(opt is None):
-        writeImageFile(imageResult, imagePath)
+        writeImageFile(imageResult, customImagePath)
         #writeImageFile(specImageResult, specImagePath)
     else:
         writeImageFile(imageResult, customImagePath)
