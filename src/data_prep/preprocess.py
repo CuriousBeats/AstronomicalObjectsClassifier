@@ -41,10 +41,10 @@ def split_data(processed_dir, raw_dir, class_names):
         for class_name in class_names:
             os.makedirs(os.path.join(processed_dir, split, class_name), exist_ok=True)
 
-    for class_name in tqdm(class_names):
+    for class_name in class_names:
         source_dir = os.path.join(raw_dir, class_name)
         file_names = os.listdir(source_dir)
-
+        t = tqdm(total=len(train_files) + len(test_files) + len(val_files), desc=f'Splitting data...')
         # Split file names into train, test, and val sets
         train_files, test_files = train_test_split(
             file_names, test_size=0.2, random_state=42, stratify= [class_name] * len(file_names)
@@ -52,10 +52,13 @@ def split_data(processed_dir, raw_dir, class_names):
         train_files, val_files = train_test_split(train_files, test_size=0.125, random_state=42, stratify= [class_name] * len(train_files))
         for file_name in train_files:
             shutil.copy(os.path.join(source_dir, file_name), os.path.join(processed_dir, 'train', class_name))
+            t.update(1)
         for file_name in test_files:
             shutil.copy(os.path.join(source_dir, file_name), os.path.join(processed_dir, 'test', class_name))
+            t.update(1)
         for file_name in val_files:
             shutil.copy(os.path.join(source_dir, file_name), os.path.join(processed_dir, 'val', class_name))
+            t.update(1)
     return 1
 
 
@@ -79,7 +82,7 @@ def get_loaders(processed_dir, batch_size):
         transforms.ToTensor(),  # Converts PIL Image to PyTorch Tensor
         transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])  # ImageNet normalization
     ])
-    
+
     train_dataset = ImageDataset(root=processed_dir + '/train', transform=data_transform)
     test_dataset = ImageDataset(root= processed_dir + '/test', transform=data_transform) 
     val_dataset = ImageDataset(root= processed_dir + '/val', transform=data_transform)
