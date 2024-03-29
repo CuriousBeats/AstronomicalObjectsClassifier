@@ -18,10 +18,23 @@ resplit_data = True
 epochs = 1 # Adjust number of epochs
 lr = 0.001  # Adjust learning rate
 
+
+
+astroImages = "noFilter"
+zoomFilter = "zoomFilter"
+invertedFilter = "invFilter"
+masks = "OBFQFilter"
+
 data_dir = "data"
-processed_dir = data_dir + "/processed/astroImages"
-raw_dir = data_dir + "/raw/image_extracts/astroImages"
-model_name = "1epoch"
+processed = "/processed"
+raw = "/raw/image_extracts"
+
+current_dataset = zoomFilter
+
+processed_dir = data_dir + processed + current_dataset
+raw_dir = data_dir + raw + current_dataset
+
+model_name = "Zoom_1epoch"
 class_names = ['galaxy', 'qso', 'star']
 
 
